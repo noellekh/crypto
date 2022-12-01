@@ -6,7 +6,7 @@ import pandas as pd
 max_words = 5000
 max_len=50
 
-def tokenize_pad_sequences(df: pd.DataFrame) -> pd.DataFrame:
+def tokenize_pad_sequences(text):
     '''
     This function tokenize the input text into sequnences of intergers and then
     pad each sequence to the same length
@@ -14,11 +14,11 @@ def tokenize_pad_sequences(df: pd.DataFrame) -> pd.DataFrame:
 
     # Text tokenization
     tokenizer = Tokenizer(num_words=max_words, lower=True, split=' ')
-    tokenizer.fit_on_texts(df)
+    tokenizer.fit_on_texts(text)
     # Transforms text to a sequence of integers
-    X = tokenizer.texts_to_sequences(df)
+    X = tokenizer.texts_to_sequences(text)
     # Pad sequences to the same length
-    X = pad_sequences(df, padding='post', maxlen=max_len)
+    X = pad_sequences(X, padding='post', maxlen=max_len)
     # return sequences
 
     return X, tokenizer

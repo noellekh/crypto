@@ -50,8 +50,8 @@ def compile(model):
     return model
 
 def train(model,
-            X_train: np.ndarray,
-            y_train: np.ndarray,
+            X: np.ndarray,
+            y: np.ndarray,
             batch_size=64,
             epochs = 10,
             verbose = 1,
@@ -60,7 +60,7 @@ def train(model,
             ):
 
     history = model.fit(
-        X_train,y_train,
+        X,y,
         validation_data=validation_data,
         validation_split=validation_split,
         batch_size=batch_size,

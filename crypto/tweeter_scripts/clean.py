@@ -26,8 +26,12 @@ def clean(text: str) -> str:
 
     return " ".join(word)
 
+# df = pd.read_csv("../../raw_data/Bitcoin_tweets.csv")
+# df = df[df["user_verified"]==True]
+# df = df[["user_name", "date", "text"]]
 
 def apply(df: pd.DataFrame) -> pd.DataFrame:
     df["clean_text"] = df["text"].apply(clean)
-
+    #print(df["clean_text"])
     return None
+#print(apply(df))

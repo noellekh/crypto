@@ -52,6 +52,7 @@ def preprocess_and_train():
                             validation_split=0.25,
                             validation_data=None
                            )
+    print("yes")
 
 def pred(X_pred: pd.DataFrame = None) -> np.ndarray:
 
