@@ -4,7 +4,7 @@ import string
 import unidecode
 from nltk.stem.porter import *
 
-def clean (X: pd.DataFrame) -> pd.DataFrame:
+def clean(text: str) -> str:
     for punctuation in string.punctuation:
         X = X.replace(punctuation, ' ') # Remove Punctuation
 
@@ -24,5 +24,8 @@ def clean (X: pd.DataFrame) -> pd.DataFrame:
     # print(words)
 
     return " ".join(word)
-def apply (X: pd.DataFrame) -> pd.DataFrame:
-    X["clean_text"] = X["text"].apply(clean)
+
+
+def apply(df: pd.DataFrame) -> pd.DataFrame:
+    df["clean_text"] = df["text"].apply(clean)
+    return None
