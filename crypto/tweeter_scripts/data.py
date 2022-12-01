@@ -1,21 +1,17 @@
-from tweeter_scripts.params import (COLUMN_NAMES_RAW,
-                                            DTYPES_RAW_OPTIMIZED,
-                                            DTYPES_RAW_OPTIMIZED_HEADLESS,
-                                            DTYPES_PROCESSED_OPTIMIZED
-                                            )
-
 import os
 import pandas as pd
 
 
-def clean_data(df: pd.DataFrame) -> pd.DataFrame:
+def get_data(df: pd.DataFrame) -> pd.DataFrame:
     """
     clean raw data by removing buggy or irrelevant transactions
     or columns for the training set
     """
 
+    df. pd.read_csv("../../raw_data/Bitocin_tweets.csv")
+
     # remove useless/redundant columns
-    df = df.drop(columns=['key'])
+    df = df[["user_name", "date", "text"]]
     df = df.drop_duplicates()
     df = df.dropna(how='any', axis=0)
 
@@ -23,7 +19,4 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     df = df[df["user_verified"]==True]
 
     df = df.reset_index()
-
-
-
     return df

@@ -4,11 +4,12 @@ import string
 import unidecode
 from nltk.stem.porter import *
 
+
 def clean(text: str) -> str:
     for punctuation in string.punctuation:
-        X = X.replace(punctuation, ' ') # Remove Punctuation
+        text = text.replace(punctuation, ' ') # Remove Punctuation
 
-    lowercased = X.lower() # Lower Case
+    lowercased = text.lower() # Lower Case
 
     unaccented_string = unidecode.unidecode(lowercased) # remove accents
     words = unaccented_string.split()
@@ -28,4 +29,5 @@ def clean(text: str) -> str:
 
 def apply(df: pd.DataFrame) -> pd.DataFrame:
     df["clean_text"] = df["text"].apply(clean)
+
     return None
