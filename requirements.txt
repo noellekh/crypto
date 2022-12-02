@@ -8,6 +8,14 @@ wheel>=0.29
 numpy
 pandas
 scikit-learn
+tensorflow
+# tensorflow-gpu
+# seaborn
+matplotlib
+# jupyter
+# seabornpylab
+sklearn
+
 
 # tests/linter
 black
@@ -15,12 +23,17 @@ coverage
 flake8
 pytest
 yapf
+httpx
+pytest-asyncio
 
 # API
 gcsfs
 google-cloud-storage
 mlflow
 s3fs
+pytz
+fastapi
+uvicorn
 
 # utilities
 six>=1.14
