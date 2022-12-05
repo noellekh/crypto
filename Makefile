@@ -2,7 +2,7 @@
 #          INSTALL & TEST
 # ----------------------------------
 reinstall_package:
-	@pip uninstall -y jh_crypto || :
+	@pip uninstall -y crypto || :
 	@pip install -e .
 
 install_requirements:
@@ -61,7 +61,7 @@ pypi:
 
 
 run_api:
-	uvicorn jh_crypto.api.fast:app --reload
+	uvicorn crypto.api.fast:app --reload
 
 
 root:

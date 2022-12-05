@@ -5,7 +5,7 @@ import os
 
 from colorama import Fore, Style
 
-from jh_crypto.ml_logic.params import LOCAL_DATA_PATH
+from crypto.ml_logic.params import LOCAL_DATA_PATH
 
 def get_pandas_chunk(path: str,
                      index: int,

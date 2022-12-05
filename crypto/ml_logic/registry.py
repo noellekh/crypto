@@ -1,4 +1,4 @@
-from jh_crypto.ml_logic.params import LOCAL_REGISTRY_PATH
+from crypto.ml_logic.params import LOCAL_REGISTRY_PATH
 
 import mlflow
 from mlflow.tracking import MlflowClient

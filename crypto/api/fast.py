@@ -5,10 +5,10 @@ from fastapi.middleware.cors import CORSMiddleware
 # from cry.ml_logic.registry import load_model
 from tensorflow.keras import Model, models
 import pandas as pd
-from jh_crypto.ml_logic.registry import load_model,save_model,get_model_version
+from crypto.ml_logic.registry import load_model,save_model,get_model_version
 import numpy as np
-from jh_crypto.ml_logic.params import  DATASET_FREQ,CHUNK_SIZE,LOCAL_DATA_PATH
-from jh_crypto.ml_logic.data import clean_data, get_chunk, save_chunk
+from crypto.ml_logic.params import  DATASET_FREQ,CHUNK_SIZE,LOCAL_DATA_PATH
+from crypto.ml_logic.data import clean_data, get_chunk, save_chunk
 
 
 PACKAGE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))

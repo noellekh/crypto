@@ -1,4 +1,4 @@
-from jh_crypto.ml_logic.params import LOCAL_DATA_PATH
+from crypto.ml_logic.params import LOCAL_DATA_PATH
 import pandas as pd
 from os import listdir
 

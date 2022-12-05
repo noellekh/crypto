@@ -1,9 +1,9 @@
-from jh_crypto.ml_logic.params import  COLUMN_NAMES_RAW,SLICING_TIME,DTYPES_RAW_OPTIMIZED,DTYPES_RAW_OPTIMIZED_HEADLESS,DTYPES_PROCESSED_OPTIMIZED,DTYPES_PROCESSED_OPTIMIZED_HEADLESS,COLUMN_NAMES_PROCESSED
+from crypto.ml_logic.params import  COLUMN_NAMES_RAW,SLICING_TIME,DTYPES_RAW_OPTIMIZED,DTYPES_RAW_OPTIMIZED_HEADLESS,DTYPES_PROCESSED_OPTIMIZED,DTYPES_PROCESSED_OPTIMIZED_HEADLESS,COLUMN_NAMES_PROCESSED
 import os
 import pandas as pd
 
-from jh_crypto.data_sources.local_disk import (get_pandas_chunk, save_local_chunk)
-from jh_crypto.data_sources.big_query import (get_bq_chunk, save_bq_chunk)
+from crypto.data_sources.local_disk import (get_pandas_chunk, save_local_chunk)
+from crypto.data_sources.big_query import (get_bq_chunk, save_bq_chunk)
 
 
 def clean_data(df: pd.DataFrame) -> pd.DataFrame:

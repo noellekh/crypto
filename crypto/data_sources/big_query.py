@@ -5,7 +5,7 @@ import pandas as pd
 
 from colorama import Fore, Style
 
-from jh_crypto.ml_logic.params import PROJECT, DATASET,GOOGLE_APPLICATION_CREDENTIALS
+from crypto.ml_logic.params import PROJECT, DATASET,GOOGLE_APPLICATION_CREDENTIALS
 from google.oauth2 import service_account
 
 

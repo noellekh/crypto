@@ -1,13 +1,13 @@
-from jh_crypto.ml_logic.params import  DATASET_FREQ,CHUNK_SIZE,LOCAL_DATA_PATH
+from crypto.ml_logic.params import  DATASET_FREQ,CHUNK_SIZE,LOCAL_DATA_PATH
 import numpy as np
 import pandas as pd
 from os import listdir
 
 from colorama import Fore, Style
 
-from jh_crypto.ml_logic.data import clean_data, get_chunk, save_chunk
-from jh_crypto.ml_logic.model import initialize_model, compile_model, train_model, evaluate_model
-from jh_crypto.ml_logic.registry import load_model,save_model,get_model_version
+from crypto.ml_logic.data import clean_data, get_chunk, save_chunk
+from crypto.ml_logic.model import initialize_model, compile_model, train_model, evaluate_model
+from crypto.ml_logic.registry import load_model,save_model,get_model_version
 
 
 
@@ -275,7 +275,7 @@ def pred(X_pred: pd.DataFrame = None,pair:str="BTC-USDT") -> np.ndarray:
 
     print("\n⭐️ Use case: predict")
 
-    from jh_crypto.ml_logic.registry import load_model
+    from crypto.ml_logic.registry import load_model
 
     # Iterate on the full dataset per chunks
     chunk_id = 0
