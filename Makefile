@@ -68,3 +68,15 @@ root:
 	@printf "\n" && curl -X 'GET' \
   'http://localhost:8000/' \
   -H 'accept: application/json' && printf "\n"
+
+
+push_datasets:
+	-bq load --sync --autodetect --skip_leading_rows 1 --replace ${DATASET}.BTC-USDT_processed_1j ${LOCAL_DATA_PATH}/processed/BTC-USDT_processed_1j.csv
+	-bq load --sync --autodetect --skip_leading_rows 1 --replace ${DATASET}.UNI-USDT_processed_1j ${LOCAL_DATA_PATH}/processed/UNI-USDT_processed_1j.csv
+	-bq load --sync --autodetect --skip_leading_rows 1 --replace ${DATASET}.MATIC-USDT_processed_1j ${LOCAL_DATA_PATH}/processed/MATIC-USDT_processed_1j.csv
+	-bq load --sync --autodetect --skip_leading_rows 1 --replace ${DATASET}.DOGE-USDT_processed_1j ${LOCAL_DATA_PATH}/processed/DOGE-USDT_processed_1j.csv
+	-bq load --sync --autodetect --skip_leading_rows 1 --replace ${DATASET}.ATOM-USDT_processed_1j ${LOCAL_DATA_PATH}/processed/ATOM-USDT_processed_1j.csv
+	-bq load --sync --autodetect --skip_leading_rows 1 --replace ${DATASET}.ETH-USDT_processed_1j ${LOCAL_DATA_PATH}/processed/ETH-USDT_processed_1j.csv
+	-bq load --sync --autodetect --skip_leading_rows 1 --replace ${DATASET}.BNB-USDT_processed_1j ${LOCAL_DATA_PATH}/processed/BNB-USDT_processed_1j.csv
+	-bq load --sync --autodetect --skip_leading_rows 1 --replace ${DATASET}.ADA-USDT_processed_1j ${LOCAL_DATA_PATH}/processed/ADA-USDT_processed_1j.csv
+	-bq load --sync --autodetect --skip_leading_rows 1 --replace ${DATASET}.LTC-USDT_processed_1j ${LOCAL_DATA_PATH}/processed/LTC-USDT_processed_1j.csv

@@ -1,57 +1,23 @@
-import time
-import tracemalloc
+import numpy as np
 
-from crypto.ml_logic.params import DATASET_SIZE
+def to_sequences(data, seq_len):
+    d = []
 
-def get_dataset_timestamp(df=None):
-    """
-    Retrieve the date of the latest available datapoint, at monthly granularity
-    """
+    for index in range(len(data) - seq_len):
+        d.append(data[index: index + seq_len])
 
-    import pandas as pd
-    from crypto.ml_logic.data import get_chunk
+    return np.array(d)
 
-    if df is None:
-        # Trick specific to this taxifare challenge:
-        # Query simply one row from the TRAIN_DATASET, it's enough to deduce the latest datapoint available
-        df = get_chunk(source_name=f"train_{DATASET_SIZE}",
-                       index=0,
-                       chunk_size=1,
-                       verbose=False)
+def preprocess_custom(data_raw, seq_len, train_split):
 
-    # retrieve first row timestamp
-    ts = pd.to_datetime(df.pickup_datetime[:1])[0]
+    data = to_sequences(data_raw, seq_len)
 
-    if ts.year < 2015:
-        # Trick specific to this taxifare challenge:
-        # We can consider all past training dataset to stop at 2014-12.
-        # New datapoints will start to be collected month by month starting 2015-01
-        ts = ts.replace(year=2014, month=12)
+    num_train = int(train_split * data.shape[0])
 
-    # adjust date to monthly granularity
-    ts = ts.replace(day=1, hour=0, minute=0, second=0, microsecond=0, nanosecond=0)
+    X_train = data[:num_train, :-1, :]
+    y_train = data[:num_train, -1, :]
 
-    return ts
+    X_test = data[num_train:, :-1, :]
+    y_test = data[num_train:, -1, :]
 
-
-def simple_time_and_memory_tracker(method):
-
-    # ### Log Level
-    # 0: Nothing
-    # 1: Print Time and Memory usage of functions
-    LOG_LEVEL = 1
-
-    def method_with_trackers(*args, **kw):
-        ts = time.time()
-        tracemalloc.start()
-        result = method(*args, **kw)
-        _, peak = tracemalloc.get_traced_memory()
-        tracemalloc.stop()
-        te = time.time()
-        duration = te - ts
-        if LOG_LEVEL > 0:
-            output = f"{method.__qualname__} executed in {round(duration, 2)} seconds, using up to {round(peak / 1024**2,2)}MB of RAM"
-            print(output)
-        return result
-
-    return method_with_trackers
+    return np.asarray(X_train).astype(np.float32), np.asarray(y_train).astype(np.float32), np.asarray(X_test).astype(np.float32), np.asarray(y_test).astype(np.float32)

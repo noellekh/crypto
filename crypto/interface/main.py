@@ -6,9 +6,9 @@ from os import listdir
 from colorama import Fore, Style
 
 from crypto.ml_logic.data import clean_data, get_chunk, save_chunk
-from crypto.ml_logic.model import initialize_model, compile_model, train_model, evaluate_model
+from crypto.ml_logic.model import initialize_model, compile_model, train_model, evaluate_model,SEQ_LEN
 from crypto.ml_logic.registry import load_model,save_model,get_model_version
-
+from crypto.ml_logic.utils import preprocess_custom
 
 
 def preprocess(pair:str="BTC-USDT"):
@@ -102,9 +102,9 @@ def train(pair:str="BTC-USDT"):
     # model = load_model()  # production model
 
     # Model params
-    learning_rate = 0.001
+    learning_rate = 0.01
     batch_size = 64
-    patience = 2
+    patience = 3
 
     # Iterate on the full dataset per chunks
     chunk_id = 0
@@ -128,34 +128,7 @@ def train(pair:str="BTC-USDT"):
 
         data_processed_chunk = data_processed_chunk.to_numpy()
 
-        SEQ_LEN = 100
-
-        def to_sequences(data, seq_len):
-            d = []
-
-            for index in range(len(data) - seq_len):
-                d.append(data[index: index + seq_len])
-
-            return np.array(d)
-
-        def preprocess(data_raw, seq_len, train_split):
-
-            data = to_sequences(data_raw, seq_len)
-
-            num_train = int(train_split * data.shape[0])
-
-            X_train = data[:num_train, :-1, :]
-            y_train = data[:num_train, -1, :]
-
-            X_test = data[num_train:, :-1, :]
-            y_test = data[num_train:, -1, :]
-
-            return np.asarray(X_train).astype(np.float32), np.asarray(y_train).astype(np.float32), np.asarray(X_test).astype(np.float32), np.asarray(y_test).astype(np.float32)
-        X_train_chunk, y_train_chunk, _, _ = preprocess(data_processed_chunk[:,-1].reshape(-1, 1), SEQ_LEN, train_split = 0.8)
-
-        # print(type(X_train_chunk),type(y_train_chunk))
-        # print(X_train_chunk.shape,y_train_chunk.shape)
-        # print(np.array(X_train_chunk))
+        X_train_chunk, y_train_chunk, _, _ = preprocess_custom(data_processed_chunk[:,-1].reshape(-1, 1), SEQ_LEN, train_split = 0.95)
 
         # Increment trained row count
         chunk_row_count = data_processed_chunk.shape[0]
@@ -275,8 +248,6 @@ def pred(X_pred: pd.DataFrame = None,pair:str="BTC-USDT") -> np.ndarray:
 
     print("\n⭐️ Use case: predict")
 
-    from crypto.ml_logic.registry import load_model
-
     # Iterate on the full dataset per chunks
     chunk_id = 0
     row_count = 0
@@ -295,49 +266,11 @@ def pred(X_pred: pd.DataFrame = None,pair:str="BTC-USDT") -> np.ndarray:
 
     data_processed_chunk = data_processed_chunk.to_numpy()
 
-    SEQ_LEN = 100
-
-    def to_sequences(data, seq_len):
-        d = []
-
-        for index in range(len(data) - seq_len):
-            d.append(data[index: index + seq_len])
-
-        return np.array(d)
-
-    def preprocess(data_raw, seq_len, train_split):
-
-        data = to_sequences(data_raw, seq_len)
-
-        num_train = int(train_split * data.shape[0])
-
-        X_train = data[:num_train, :-1, :]
-        y_train = data[:num_train, -1, :]
-
-        X_test = data[num_train:, :-1, :]
-        y_test = data[num_train:, -1, :]
-
-        return np.asarray(X_train).astype(np.float32), np.asarray(y_train).astype(np.float32), np.asarray(X_test).astype(np.float32), np.asarray(y_test).astype(np.float32)
-    _, _, X_test, y_test = preprocess(data_processed_chunk[:,-1].reshape(-1, 1), SEQ_LEN, train_split = 0.8)
-    print(X_test.shape)
+    _, _, X_test, y_test = preprocess_custom(data_processed_chunk[:,-1].reshape(-1, 1), SEQ_LEN, train_split = 0.95)
     X_test[-1,:-1,:] = X_test[-1,1:,:]
     X_test[-1,-1,:] = y_test[-1]
     X_test = X_test[None,-1,:,:]
-    print(X_test)
 
-
-
-    # if X_pred is None:
-
-    #     X_pred = pd.DataFrame(dict(
-    #         key=["2013-07-06 17:18:00"],  # useless but the pipeline requires it
-    #         pickup_datetime=["2013-07-06 17:18:00 UTC"],
-    #         pickup_longitude=[-73.950655],
-    #         pickup_latitude=[40.783282],
-    #         dropoff_longitude=[-73.984365],
-    #         dropoff_latitude=[40.769802],
-    #         passenger_count=[1]
-    #     ))
     model = load_model()
 
 
@@ -352,9 +285,9 @@ def pred(X_pred: pd.DataFrame = None,pair:str="BTC-USDT") -> np.ndarray:
 if __name__ == '__main__':
     # files = [f for f in listdir(LOCAL_DATA_PATH+"/raw") if ".csv" in f]
     # files = [f for f in files if "USDT" in f]
-    # # print(files)
     # for file in files:
     #     preprocess(file[:-4])
+    #     train(file[:-4])
     # train()
     pred()
     # evaluate()

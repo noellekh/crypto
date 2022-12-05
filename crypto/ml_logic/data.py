@@ -40,7 +40,7 @@ def get_chunk(source_name: str,
             dtypes = DTYPES_RAW_OPTIMIZED
         else:
             dtypes = DTYPES_RAW_OPTIMIZED_HEADLESS
-    print(os.environ.get("DATA_SOURCE"))
+
     if os.environ.get("DATA_SOURCE") == "bigquery":
 
         chunk_df = get_bq_chunk(table=source_name,

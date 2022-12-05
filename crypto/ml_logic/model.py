@@ -16,14 +16,13 @@ from typing import Tuple
 
 import numpy as np
 
+SEQ_LEN = 100
 
 def initialize_model(X: np.ndarray) -> Model:
     """
     Initialize the Neural Network with random weights
     """
     print(Fore.BLUE + "\nInitialize model..." + Style.RESET_ALL)
-
-    SEQ_LEN=100
 
     DROPOUT = 0.2
     WINDOW_SIZE = SEQ_LEN - 1
@@ -34,8 +33,8 @@ def initialize_model(X: np.ndarray) -> Model:
                             input_shape=(WINDOW_SIZE, X.shape[-1])))
     model.add(Dropout(rate=DROPOUT))
 
-    # model.add(Bidirectional(LSTM((WINDOW_SIZE * 2), return_sequences=True)))
-    # model.add(Dropout(rate=DROPOUT))
+    model.add(Bidirectional(LSTM((WINDOW_SIZE * 2), return_sequences=True)))
+    model.add(Dropout(rate=DROPOUT))
 
     model.add(Bidirectional(LSTM(WINDOW_SIZE, return_sequences=False)))
 
