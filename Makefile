@@ -1,6 +1,10 @@
 # ----------------------------------
 #          INSTALL & TEST
 # ----------------------------------
+reinstall_package:
+	@pip uninstall -y jh_crypto || :
+	@pip install -e .
+
 install_requirements:
 	@pip install -r requirements.txt
 
@@ -53,3 +57,14 @@ pypi_test:
 
 pypi:
 	@twine upload dist/* -u $(PYPI_USERNAME)
+
+
+
+run_api:
+	uvicorn jh_crypto.api.fast:app --reload
+
+
+root:
+	@printf "\n" && curl -X 'GET' \
+  'http://localhost:8000/' \
+  -H 'accept: application/json' && printf "\n"
