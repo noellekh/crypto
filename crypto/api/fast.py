@@ -11,10 +11,9 @@ from crypto.ml_logic.utils import preprocess_custom
 
 PACKAGE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 # MODEL_DIR = os.path.join(PACKAGE_DIR, 'raw_data')
-
 # def load_model():
 #     return models.load_model(os.path.join(MODEL_DIR, 'Lastmodel0212.h5'))
-
+#lksdfj
 app = FastAPI()
 app.state.model = load_model()
 
