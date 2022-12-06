@@ -1,8 +1,13 @@
+config.ini
+models/
+raw_data/
+.python-version
 *.egg-info
 .coverage
 .ipynb_checkpoints
 .DS_Store
-raw_data/
 *.csv
 **/__pycache__/
 .env
+*.json
+.env.yaml
