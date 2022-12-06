@@ -23,8 +23,10 @@ def get_bq_chunk(table: str,
 
     table = f"{PROJECT}.{DATASET}.{table}"
 
-    credentials = service_account.Credentials.from_service_account_file(GOOGLE_APPLICATION_CREDENTIALS)
-    client = bigquery.Client(credentials=credentials)
+    # credentials = service_account.Credentials.from_service_account_file(GOOGLE_APPLICATION_CREDENTIALS)
+    # client = bigquery.Client(credentials=credentials)
+
+    client = bigquery.Client()
 
     if verbose:
         if chunk_size is None:

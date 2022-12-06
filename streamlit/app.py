@@ -6,6 +6,11 @@ import streamlit.components.v1 as components
 from transformers import pipeline
 import tweepy as tw
 import os
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
+# import binance
+from binance import Client
+
 
 
 ####################
@@ -56,6 +61,48 @@ for i in range(len(crpytoList.keys())):
         with col2:
             st.metric(selected_crypto, col_price, col_percent)
 
+#######################
+#   Binance           #
+#######################
+
+
+
+api_key = os.environ.get("BINANCE_KEY")
+api_secret = os.environ.get("BINANCE_SECRET")
+
+client = Client(api_key, api_secret)
+
+asset = 'BTCUSDT'
+
+def getminutedata(symbol, interval, lookback):
+    frame = pd.DataFrame(client.get_historical_klines(symbol, interval, lookback))
+    frame = frame.iloc[:,:6]
+    frame.columns = ['Time', 'Open', 'High', 'Low', 'Close', 'Volume']
+    frame = frame.set_index('Time')
+    frame.index = pd.to_datetime(frame.index, units='ms')
+    frame = frame.astype(float)
+    return frame
+
+# df = getminutedata(asset, '1m', '120m')
+
+def animate(i):
+    data =  getminutedata(asset, '1m', '120m')
+    plt.cla()
+    plt.plot(data.index, data.Close)
+    plt.xlabel('Time')
+    plt.ylabel('Price')
+    plt.title(asset)
+    plt.gcf().autofmt_xdate()
+    plt.tight_layout()
+
+
+fig, ax = plt.subplots()
+ani = FuncAnimation(plt.gcf(), animate, 1000)
+plt.tight_layout()
+plt.show()
+
+
+
 ####################
 #   Twitter #
 ####################
@@ -102,6 +149,8 @@ def run():
 
 if __name__=="__main__":
     run()
+
+
 
 ####################
 #   Prediction  #
