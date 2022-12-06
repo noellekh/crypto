@@ -75,7 +75,6 @@ if input:
 #######################
 
 consumer_key = os.environ.get("api_key")
-print(consumer_key)
 consumer_secret = os.environ.get("api_key_secret")
 access_token = os.environ.get("access_token")
 access_token_secret = os.environ.get("access_token_secret")
