@@ -358,10 +358,10 @@ if __name__ == '__main__':
     pairs = ["BTC-USDT","MATIC-USDT","DOGE-USDT",
              "ATOM-USDT","ETH-USDT","BNB-USDT","ADA-USDT","LTC-USDT","UNI-USDT"]
     for pair in pairs:
-        preprocess(pair)
+        # preprocess(pair)
         scaling(pair)
-        train(pair)
-        pred(pair=pair)
+        # train(pair)
+        # pred(pair=pair)
 
     # train()
     # pred()
