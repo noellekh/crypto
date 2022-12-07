@@ -55,4 +55,20 @@ COLUMN_NAMES_PROCESSED = DTYPES_PROCESSED_OPTIMIZED.keys()
 DTYPES_PROCESSED_OPTIMIZED_HEADLESS = {
     0: "O",
     1: "float64",
+
+}
+
+
+DTYPES_SCALED_OPTIMIZED = {
+    "open_time": "O",
+    "close": "float64",
+    "scaled": "float64"
+}
+
+COLUMN_NAMES_SCALED = DTYPES_SCALED_OPTIMIZED.keys()
+
+DTYPES_SCALED_OPTIMIZED_HEADLESS = {
+    0: "O",
+    1: "float64",
+    2:"float64"
 }

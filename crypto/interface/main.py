@@ -5,10 +5,11 @@ from os import listdir
 
 from colorama import Fore, Style
 
-from crypto.ml_logic.data import clean_data, get_chunk, save_chunk
+from crypto.ml_logic.data import clean_data, get_chunk, save_chunk, scaler_custom
 from crypto.ml_logic.model import initialize_model, compile_model, train_model, evaluate_model,SEQ_LEN
 from crypto.ml_logic.registry import load_model,save_model,get_model_version
 from crypto.ml_logic.utils import preprocess_custom
+from sklearn.preprocessing import MinMaxScaler
 
 
 def preprocess(pair:str="BTC-USDT"):
@@ -43,6 +44,66 @@ def preprocess(pair:str="BTC-USDT"):
         row_count += data_chunk.shape[0]
 
         data_chunk_cleaned = clean_data(data_chunk)
+
+        cleaned_row_count += len(data_chunk_cleaned)
+
+        # Break out of while loop if cleaning removed all rows
+        if len(data_chunk_cleaned) == 0:
+            print(Fore.BLUE + "\nNo cleaned data in latest chunk..." + Style.RESET_ALL)
+            break
+
+
+        # Save and append the chunk
+        is_first = chunk_id == 0
+
+        save_chunk(
+            destination_name=destination_name,
+            is_first=is_first,
+            data=data_chunk_cleaned
+        )
+
+        chunk_id += 1
+
+    if row_count == 0:
+        print("\n✅ No new data for the preprocessing 👌")
+        return None
+
+    print(f"\n✅ Data processed saved entirely: {row_count} rows ({cleaned_row_count} cleaned)")
+
+    return None
+
+def scaling(pair:str="BTC-USDT"):
+    """
+    Preprocess the dataset by chunks fitting in memory.
+    parameters:
+    """
+
+    print("\n⭐️ Use case: preprocess")
+
+    # Iterate on the dataset, in chunks
+    chunk_id = 0
+    row_count = 0
+    cleaned_row_count = 0
+    source_name = f"{pair}_processed_{DATASET_FREQ}"
+    destination_name = f"{pair}_scaled_{DATASET_FREQ}"
+
+    while (True):
+        print(Fore.BLUE + f"\nProcessing chunk n°{chunk_id}..." + Style.RESET_ALL)
+
+        data_chunk = get_chunk(
+            source_name=source_name,
+            index=chunk_id * CHUNK_SIZE,
+            chunk_size=CHUNK_SIZE
+        )
+
+        # Break out of while loop if data is none
+        if data_chunk is None:
+            print(Fore.BLUE + "\nNo data in latest chunk..." + Style.RESET_ALL)
+            break
+
+        row_count += data_chunk.shape[0]
+
+        data_chunk_cleaned = scaler_custom(data_chunk)
 
         cleaned_row_count += len(data_chunk_cleaned)
 
@@ -116,7 +177,7 @@ def train(pair:str="BTC-USDT"):
         print(Fore.BLUE + f"\nLoading and training on preprocessed chunk n°{chunk_id}..." + Style.RESET_ALL)
 
         data_processed_chunk = get_chunk(
-            source_name=f"{pair}_processed_{DATASET_FREQ}",
+            source_name=f"{pair}_scaled_{DATASET_FREQ}",
             index=chunk_id * CHUNK_SIZE,
             chunk_size=CHUNK_SIZE
         )
@@ -127,6 +188,8 @@ def train(pair:str="BTC-USDT"):
             break
 
         data_processed_chunk = data_processed_chunk.to_numpy()
+
+        data_processed_chunk = data_processed_chunk[:,[0,-1]]
 
         X_train_chunk, y_train_chunk, _, _ = preprocess_custom(data_processed_chunk[:,-1].reshape(-1, 1), SEQ_LEN, train_split = 0.95)
 
@@ -184,12 +247,12 @@ def train(pair:str="BTC-USDT"):
         training_set_size=DATASET_FREQ,
         # val_set_size=VALIDATION_DATASET_SIZE,
         row_count=row_count,
-        model_version=get_model_version(),
+        model_version=get_model_version(pair=pair),
         # dataset_timestamp=get_dataset_timestamp(),
     )
 
     # Save model
-    save_model(model=model, params=params, metrics=dict(mae=val_mae))
+    save_model(model=model, params=params, metrics=dict(mae=val_mae),pair=pair)
 
     return val_mae
 
@@ -241,7 +304,7 @@ def train(pair:str="BTC-USDT"):
 #     return mae
 
 
-def pred(X_pred: pd.DataFrame = None,pair:str="BTC-USDT") -> np.ndarray:
+def pred(pair:str="BTC-USDT") -> np.ndarray:
     """
     Make a prediction using the latest trained model
     """
@@ -258,7 +321,7 @@ def pred(X_pred: pd.DataFrame = None,pair:str="BTC-USDT") -> np.ndarray:
     print(Fore.BLUE + f"\nLoading and training on preprocessed chunk n°{chunk_id}..." + Style.RESET_ALL)
 
     data_processed_chunk = get_chunk(
-        source_name=f"{pair}_processed_{DATASET_FREQ}",
+        source_name=f"{pair}_scaled_{DATASET_FREQ}",
         index=chunk_id * CHUNK_SIZE,
         chunk_size=CHUNK_SIZE
     )
@@ -266,18 +329,24 @@ def pred(X_pred: pd.DataFrame = None,pair:str="BTC-USDT") -> np.ndarray:
 
     data_processed_chunk = data_processed_chunk.to_numpy()
 
+    scaler = MinMaxScaler()
+    training_scaler = data_processed_chunk[:,1].reshape(-1, 1)
+    scaler.fit(training_scaler)
+
+
+    data_processed_chunk = data_processed_chunk[:,[0,-1]]
     _, _, X_test, y_test = preprocess_custom(data_processed_chunk[:,-1].reshape(-1, 1), SEQ_LEN, train_split = 0.95)
     X_test[-1,:-1,:] = X_test[-1,1:,:]
     X_test[-1,-1,:] = y_test[-1]
     X_test = X_test[None,-1,:,:]
 
-    model = load_model()
-
-
+    model = load_model(pair=pair)
 
     y_pred = model.predict(X_test)
 
-    print("\n✅ prediction done: ", y_pred, y_pred.shape)
+    y_pred = scaler.inverse_transform(y_pred)
+
+    print("\n✅ prediction done: ", y_pred, y_pred.shape,pair)
 
     return y_pred
 
@@ -285,9 +354,15 @@ def pred(X_pred: pd.DataFrame = None,pair:str="BTC-USDT") -> np.ndarray:
 if __name__ == '__main__':
     # files = [f for f in listdir(LOCAL_DATA_PATH+"/raw") if ".csv" in f]
     # files = [f for f in files if "USDT" in f]
-    # for file in files:
-    #     preprocess(file[:-4])
-    #     train(file[:-4])
+
+    pairs = ["BTC-USDT","MATIC-USDT","DOGE-USDT",
+             "ATOM-USDT","ETH-USDT","BNB-USDT","ADA-USDT","LTC-USDT","UNI-USDT"]
+    for pair in pairs:
+        preprocess(pair)
+        scaling(pair)
+        train(pair)
+        pred(pair=pair)
+
     # train()
-    pred()
+    # pred()
     # evaluate()

@@ -32,11 +32,7 @@ def get_pandas_chunk(path: str,
                 dtype=dtypes,
                 header=None,
                 )  # read all rows
-        # print(df.dtypes)
-        # print(dtypes)
-        # read_csv(dtypes=...) will silently fail to convert data types, if column names do no match dictionnary key provided.
-        # print(dtypes)
-        # print(dict(df.dtypes))
+
         if columns is not None:
             df.columns = columns
         # if isinstance(dtypes, dict):
