@@ -9,7 +9,7 @@ import os
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 # import binance
-from binance import Client
+#from binance import Client
 
 
 
@@ -67,39 +67,39 @@ for i in range(len(crpytoList.keys())):
 
 
 
-api_key = os.environ.get("BINANCE_KEY")
-api_secret = os.environ.get("BINANCE_SECRET")
+# api_key = os.environ.get("BINANCE_KEY")
+# api_secret = os.environ.get("BINANCE_SECRET")
 
-client = Client(api_key, api_secret)
+# client = Client(api_key, api_secret)
 
-asset = 'BTCUSDT'
+# asset = 'BTCUSDT'
 
-def getminutedata(symbol, interval, lookback):
-    frame = pd.DataFrame(client.get_historical_klines(symbol, interval, lookback))
-    frame = frame.iloc[:,:6]
-    frame.columns = ['Time', 'Open', 'High', 'Low', 'Close', 'Volume']
-    frame = frame.set_index('Time')
-    frame.index = pd.to_datetime(frame.index, units='ms')
-    frame = frame.astype(float)
-    return frame
+# def getminutedata(symbol, interval, lookback):
+#     frame = pd.DataFrame(client.get_historical_klines(symbol, interval, lookback))
+#     frame = frame.iloc[:,:6]
+#     frame.columns = ['Time', 'Open', 'High', 'Low', 'Close', 'Volume']
+#     frame = frame.set_index('Time')
+#     frame.index = pd.to_datetime(frame.index, units='ms')
+#     frame = frame.astype(float)
+#     return frame
 
-# df = getminutedata(asset, '1m', '120m')
+# # df = getminutedata(asset, '1m', '120m')
 
-def animate(i):
-    data =  getminutedata(asset, '1m', '120m')
-    plt.cla()
-    plt.plot(data.index, data.Close)
-    plt.xlabel('Time')
-    plt.ylabel('Price')
-    plt.title(asset)
-    plt.gcf().autofmt_xdate()
-    plt.tight_layout()
+# def animate(i):
+#     data =  getminutedata(asset, '1m', '120m')
+#     plt.cla()
+#     plt.plot(data.index, data.Close)
+#     plt.xlabel('Time')
+#     plt.ylabel('Price')
+#     plt.title(asset)
+#     plt.gcf().autofmt_xdate()
+#     plt.tight_layout()
 
 
-fig, ax = plt.subplots()
-ani = FuncAnimation(plt.gcf(), animate, 1000)
-plt.tight_layout()
-plt.show()
+# fig, ax = plt.subplots()
+# ani = FuncAnimation(plt.gcf(), animate, 1000)
+# plt.tight_layout()
+# plt.show()
 
 
 
@@ -139,7 +139,9 @@ def run():
         number_of_tweets = st.number_input("Enter the number of latest tweets for which you want to know the sentiment(Maximum 50 tweets)", 0,50,10)
         submit_button = st.form_submit_button(label="Submit")
         if submit_button:
+
             tweets =tw.Cursor(api.search_tweets,q=search_words,lang="en").items(number_of_tweets)
+
             tweet_list = [i.text for i in tweets]
         p = [i for i in classifier(tweet_list)]
         q=[p[i]["label"] for i in range(len(p))]
