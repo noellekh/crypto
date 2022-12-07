@@ -78,13 +78,14 @@ def scaling(pair:str="BTC-USDT"):
     parameters:
     """
 
-    print("\n⭐️ Use case: preprocess")
+    print("\n⭐️ Use case: scaling")
 
     # Iterate on the dataset, in chunks
     chunk_id = 0
     row_count = 0
     cleaned_row_count = 0
-    source_name = f"{pair}_processed_{DATASET_FREQ}"
+    # source_name = f"{pair}_processed_{DATASET_FREQ}"
+    source_name = f"{pair}_processed_1d"
     destination_name = f"{pair}_scaled_{DATASET_FREQ}"
 
     while (True):
@@ -143,24 +144,7 @@ def train(pair:str="BTC-USDT"):
 
     print(Fore.BLUE + "\nLoading preprocessed validation data..." + Style.RESET_ALL)
 
-    # # Load a validation set common to all chunks, used to early stop model training
-    # data_val_processed = get_chunk(
-    #     source_name=f"val_processed_{VALIDATION_DATASET_SIZE}",
-    #     index=0,  # retrieve from first row
-    #     chunk_size=None
-    # )  # Retrieve all further data
-
-    # if data_val_processed is None:
-    #     print("\n✅ no data to train")
-    #     return None
-
-    # data_val_processed = data_val_processed.to_numpy()
-
-    # X_val_processed = data_val_processed[:, :-1]
-    # y_val = data_val_processed[:, -1]
-
     model = None
-    # model = load_model()  # production model
 
     # Model params
     learning_rate = 0.01
@@ -191,7 +175,7 @@ def train(pair:str="BTC-USDT"):
 
         data_processed_chunk = data_processed_chunk[:,[0,-1]]
 
-        X_train_chunk, y_train_chunk, _, _ = preprocess_custom(data_processed_chunk[:,-1].reshape(-1, 1), SEQ_LEN, train_split = 0.95)
+        X_train_chunk, y_train_chunk = preprocess_custom(data_processed_chunk[:,-1].reshape(-1, 1), SEQ_LEN, train_split = 0.95)
 
         # Increment trained row count
         chunk_row_count = data_processed_chunk.shape[0]
@@ -335,7 +319,7 @@ def pred(pair:str="BTC-USDT") -> np.ndarray:
 
 
     data_processed_chunk = data_processed_chunk[:,[0,-1]]
-    _, _, X_test, y_test = preprocess_custom(data_processed_chunk[:,-1].reshape(-1, 1), SEQ_LEN, train_split = 0.95)
+    X_test, y_test = preprocess_custom(data_processed_chunk[:,-1].reshape(-1, 1), SEQ_LEN, train_split = 0.95)
     X_test[-1,:-1,:] = X_test[-1,1:,:]
     X_test[-1,-1,:] = y_test[-1]
     X_test = X_test[None,-1,:,:]
@@ -359,9 +343,10 @@ if __name__ == '__main__':
              "ATOM-USDT","ETH-USDT","BNB-USDT","ADA-USDT","LTC-USDT","UNI-USDT"]
     for pair in pairs:
         # preprocess(pair)
-        scaling(pair)
-        # train(pair)
-        # pred(pair=pair)
+        # scaling(pair)
+        train(pair)
+        pred(pair)
+        break
 
     # train()
     # pred()
