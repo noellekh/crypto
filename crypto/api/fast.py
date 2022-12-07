@@ -18,9 +18,9 @@ app.add_middleware(
 )
 
 @app.get("/predict")
-def predict(pair:str="BTC-USDT"):
+def predict(pair:str="BTC-USDT",freq:str="1d"):
 
-    return {"prediction":float(pred(pair=pair)[0][0])
+    return {"prediction":float(pred(pair=pair,freq=freq)[0][0])
              }
 
 

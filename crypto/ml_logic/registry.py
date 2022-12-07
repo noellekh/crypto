@@ -16,7 +16,8 @@ from tensorflow.keras import Model, models
 def save_model(model: Model = None,
                params: dict = None,
                metrics: dict = None,
-               pair: str = "BTC-USDT") -> None:
+               pair: str = "BTC-USDT",
+               freq: str = "1d") -> None:
     """
     persist trained model, params and metrics
     """
@@ -29,7 +30,7 @@ def save_model(model: Model = None,
         # $CHA_BEGIN
         mlflow_tracking_uri = os.environ.get("MLFLOW_TRACKING_URI")
         mlflow_experiment = os.environ.get("MLFLOW_EXPERIMENT")
-        mlflow_model_name = os.environ.get("MLFLOW_MODEL_NAME")+pair
+        mlflow_model_name = os.environ.get("MLFLOW_MODEL_NAME")+pair+"_"+freq
         # $CHA_END
 
         # configure mlflow
@@ -95,12 +96,12 @@ def save_model(model: Model = None,
     return None
 
 
-def load_model(save_copy_locally=False,pair: str="BTC-USDT") -> Model:
+def load_model(save_copy_locally=False,pair: str="BTC-USDT",freq: str= "1d") -> Model:
     """
     load the latest saved model, return None if no model found
     """
     if os.environ.get("MODEL_TARGET") == "mlflow":
-        stage = get_model_version(pair=pair)
+        stage = get_model_version(pair=pair,freq=freq)
         # print(stage)
 
         print(Fore.BLUE + f"\nLoad model stage from mlflow..." + Style.RESET_ALL)
@@ -110,7 +111,7 @@ def load_model(save_copy_locally=False,pair: str="BTC-USDT") -> Model:
         # $CHA_BEGIN
         mlflow.set_tracking_uri(os.environ.get("MLFLOW_TRACKING_URI"))
 
-        mlflow_model_name = os.environ.get("MLFLOW_MODEL_NAME")+pair
+        mlflow_model_name = os.environ.get("MLFLOW_MODEL_NAME")+pair+"_"+freq
 
         model_uri = f"models:/{mlflow_model_name}/{stage}"
         print(f"- uri: {model_uri}")
@@ -152,7 +153,7 @@ def load_model(save_copy_locally=False,pair: str="BTC-USDT") -> Model:
     return model
 
 
-def get_model_version(stage="Production",pair:str="BTC-USDT"):
+def get_model_version(stage="Production",pair:str="BTC-USDT",freq:str="1d"):
     """
     Retrieve the version number of the latest model in the given stage
     - stages: "None", "Production", "Staging", "Archived"
@@ -162,7 +163,7 @@ def get_model_version(stage="Production",pair:str="BTC-USDT"):
 
         mlflow.set_tracking_uri(os.environ.get("MLFLOW_TRACKING_URI"))
 
-        mlflow_model_name = os.environ.get("MLFLOW_MODEL_NAME")+pair
+        mlflow_model_name = os.environ.get("MLFLOW_MODEL_NAME")+pair+"_"+freq
 
         client = MlflowClient()
 

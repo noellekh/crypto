@@ -1,7 +1,7 @@
 import os
 import numpy as np
 
-DATASET_FREQ = os.environ.get("DATASET_FREQ")
+# DATASET_FREQ = os.environ.get("DATASET_FREQ")
 VALIDATION_DATASET_SIZE = os.environ.get("VALIDATION_DATASET_SIZE")
 CHUNK_SIZE = int(os.environ.get("CHUNK_SIZE"))
 LOCAL_DATA_PATH = os.path.expanduser(os.environ.get("LOCAL_DATA_PATH"))

@@ -1,4 +1,4 @@
-from crypto.ml_logic.params import  DATASET_FREQ,CHUNK_SIZE,LOCAL_DATA_PATH
+from crypto.ml_logic.params import CHUNK_SIZE,LOCAL_DATA_PATH
 import numpy as np
 import pandas as pd
 from os import listdir
@@ -12,7 +12,7 @@ from crypto.ml_logic.utils import preprocess_custom
 from sklearn.preprocessing import MinMaxScaler
 
 
-def preprocess(pair:str="BTC-USDT"):
+def preprocess(pair:str="BTC-USDT",freq:str="1d"):
     """
     Preprocess the dataset by chunks fitting in memory.
     parameters:
@@ -25,7 +25,7 @@ def preprocess(pair:str="BTC-USDT"):
     row_count = 0
     cleaned_row_count = 0
     source_name = f"{pair}"
-    destination_name = f"{pair}_processed_{DATASET_FREQ}"
+    destination_name = f"{pair}_processed_{freq}"
 
     while (True):
         print(Fore.BLUE + f"\nProcessing chunk n°{chunk_id}..." + Style.RESET_ALL)
@@ -72,7 +72,7 @@ def preprocess(pair:str="BTC-USDT"):
 
     return None
 
-def scaling(pair:str="BTC-USDT"):
+def scaling(pair:str="BTC-USDT",freq:str="1d"):
     """
     Preprocess the dataset by chunks fitting in memory.
     parameters:
@@ -84,9 +84,8 @@ def scaling(pair:str="BTC-USDT"):
     chunk_id = 0
     row_count = 0
     cleaned_row_count = 0
-    # source_name = f"{pair}_processed_{DATASET_FREQ}"
-    source_name = f"{pair}_processed_1d"
-    destination_name = f"{pair}_scaled_{DATASET_FREQ}"
+    source_name = f"{pair}_processed_{freq}"
+    destination_name = f"{pair}_scaled_{freq}"
 
     while (True):
         print(Fore.BLUE + f"\nProcessing chunk n°{chunk_id}..." + Style.RESET_ALL)
@@ -133,7 +132,7 @@ def scaling(pair:str="BTC-USDT"):
 
     return None
 
-def train(pair:str="BTC-USDT"):
+def train(pair:str="BTC-USDT",freq:str="1d"):
     """
     Train a new model on the full (already preprocessed) dataset ITERATIVELY, by loading it
     chunk-by-chunk, and updating the weight of the model after each chunks.
@@ -161,7 +160,7 @@ def train(pair:str="BTC-USDT"):
         print(Fore.BLUE + f"\nLoading and training on preprocessed chunk n°{chunk_id}..." + Style.RESET_ALL)
 
         data_processed_chunk = get_chunk(
-            source_name=f"{pair}_scaled_{DATASET_FREQ}",
+            source_name=f"{pair}_scaled_{freq}",
             index=chunk_id * CHUNK_SIZE,
             chunk_size=CHUNK_SIZE
         )
@@ -228,15 +227,15 @@ def train(pair:str="BTC-USDT"):
         chunk_size=CHUNK_SIZE,
 
         # Data source
-        training_set_size=DATASET_FREQ,
+        training_set_size=freq,
         # val_set_size=VALIDATION_DATASET_SIZE,
         row_count=row_count,
-        model_version=get_model_version(pair=pair),
+        model_version=get_model_version(pair=pair,freq=freq),
         # dataset_timestamp=get_dataset_timestamp(),
     )
 
     # Save model
-    save_model(model=model, params=params, metrics=dict(mae=val_mae),pair=pair)
+    save_model(model=model, params=params, metrics=dict(mae=val_mae),pair=pair,freq=freq)
 
     return val_mae
 
@@ -288,7 +287,7 @@ def train(pair:str="BTC-USDT"):
 #     return mae
 
 
-def pred(pair:str="BTC-USDT") -> np.ndarray:
+def pred(pair:str="BTC-USDT",freq:str="1d") -> np.ndarray:
     """
     Make a prediction using the latest trained model
     """
@@ -305,7 +304,7 @@ def pred(pair:str="BTC-USDT") -> np.ndarray:
     print(Fore.BLUE + f"\nLoading and training on preprocessed chunk n°{chunk_id}..." + Style.RESET_ALL)
 
     data_processed_chunk = get_chunk(
-        source_name=f"{pair}_scaled_{DATASET_FREQ}",
+        source_name=f"{pair}_scaled_{freq}",
         index=chunk_id * CHUNK_SIZE,
         chunk_size=CHUNK_SIZE
     )
@@ -324,7 +323,7 @@ def pred(pair:str="BTC-USDT") -> np.ndarray:
     X_test[-1,-1,:] = y_test[-1]
     X_test = X_test[None,-1,:,:]
 
-    model = load_model(pair=pair)
+    model = load_model(pair=pair,freq=freq)
 
     y_pred = model.predict(X_test)
 
@@ -341,11 +340,13 @@ if __name__ == '__main__':
 
     pairs = ["BTC-USDT","MATIC-USDT","DOGE-USDT",
              "ATOM-USDT","ETH-USDT","BNB-USDT","ADA-USDT","LTC-USDT","UNI-USDT"]
-    for pair in pairs:
-        # preprocess(pair)
-        # scaling(pair)
-        train(pair)
-        pred(pair)
+    frequences = ["1d","12h","6h"]
+    for pair in pairs[:1]:
+        for freq in frequences:
+            # preprocess(pair)
+            scaling(pair=pair,freq=freq)
+            train(pair=pair,freq=freq)
+            pred(pair=pair,freq=freq)
         break
 
     # train()
