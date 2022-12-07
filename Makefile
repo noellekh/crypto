@@ -71,12 +71,21 @@ root:
 
 
 push_datasets:
-	-bq load --sync --autodetect --skip_leading_rows 1 --replace ${DATASET}.BTC-USDT_processed_1j ${LOCAL_DATA_PATH}/processed/BTC-USDT_processed_1j.csv
-	-bq load --sync --autodetect --skip_leading_rows 1 --replace ${DATASET}.UNI-USDT_processed_1j ${LOCAL_DATA_PATH}/processed/UNI-USDT_processed_1j.csv
-	-bq load --sync --autodetect --skip_leading_rows 1 --replace ${DATASET}.MATIC-USDT_processed_1j ${LOCAL_DATA_PATH}/processed/MATIC-USDT_processed_1j.csv
-	-bq load --sync --autodetect --skip_leading_rows 1 --replace ${DATASET}.DOGE-USDT_processed_1j ${LOCAL_DATA_PATH}/processed/DOGE-USDT_processed_1j.csv
-	-bq load --sync --autodetect --skip_leading_rows 1 --replace ${DATASET}.ATOM-USDT_processed_1j ${LOCAL_DATA_PATH}/processed/ATOM-USDT_processed_1j.csv
-	-bq load --sync --autodetect --skip_leading_rows 1 --replace ${DATASET}.ETH-USDT_processed_1j ${LOCAL_DATA_PATH}/processed/ETH-USDT_processed_1j.csv
-	-bq load --sync --autodetect --skip_leading_rows 1 --replace ${DATASET}.BNB-USDT_processed_1j ${LOCAL_DATA_PATH}/processed/BNB-USDT_processed_1j.csv
-	-bq load --sync --autodetect --skip_leading_rows 1 --replace ${DATASET}.ADA-USDT_processed_1j ${LOCAL_DATA_PATH}/processed/ADA-USDT_processed_1j.csv
-	-bq load --sync --autodetect --skip_leading_rows 1 --replace ${DATASET}.LTC-USDT_processed_1j ${LOCAL_DATA_PATH}/processed/LTC-USDT_processed_1j.csv
+# -bq load --sync --autodetect --skip_leading_rows 1 --replace ${DATASET}.BTC-USDT_processed_1j ${LOCAL_DATA_PATH}/processed/BTC-USDT_processed_1j.csv
+# -bq load --sync --autodetect --skip_leading_rows 1 --replace ${DATASET}.UNI-USDT_processed_1j ${LOCAL_DATA_PATH}/processed/UNI-USDT_processed_1j.csv
+# -bq load --sync --autodetect --skip_leading_rows 1 --replace ${DATASET}.MATIC-USDT_processed_1j ${LOCAL_DATA_PATH}/processed/MATIC-USDT_processed_1j.csv
+# -bq load --sync --autodetect --skip_leading_rows 1 --replace ${DATASET}.DOGE-USDT_processed_1j ${LOCAL_DATA_PATH}/processed/DOGE-USDT_processed_1j.csv
+# -bq load --sync --autodetect --skip_leading_rows 1 --replace ${DATASET}.ATOM-USDT_processed_1j ${LOCAL_DATA_PATH}/processed/ATOM-USDT_processed_1j.csv
+# -bq load --sync --autodetect --skip_leading_rows 1 --replace ${DATASET}.ETH-USDT_processed_1j ${LOCAL_DATA_PATH}/processed/ETH-USDT_processed_1j.csv
+# -bq load --sync --autodetect --skip_leading_rows 1 --replace ${DATASET}.BNB-USDT_processed_1j ${LOCAL_DATA_PATH}/processed/BNB-USDT_processed_1j.csv
+# -bq load --sync --autodetect --skip_leading_rows 1 --replace ${DATASET}.ADA-USDT_processed_1j ${LOCAL_DATA_PATH}/processed/ADA-USDT_processed_1j.csv
+# -bq load --sync --autodetect --skip_leading_rows 1 --replace ${DATASET}.LTC-USDT_processed_1j ${LOCAL_DATA_PATH}/processed/LTC-USDT_processed_1j.csv
+	-bq load --sync --autodetect --skip_leading_rows 1 --replace ${DATASET}.BTC-USDT ${LOCAL_DATA_PATH}/raw/BTC-USDT.csv
+	-bq load --sync --autodetect --skip_leading_rows 1 --replace ${DATASET}.UNI-USDT ${LOCAL_DATA_PATH}/raw/UNI-USDT.csv
+	-bq load --sync --autodetect --skip_leading_rows 1 --replace ${DATASET}.MATIC-USDT ${LOCAL_DATA_PATH}/raw/MATIC-USDT.csv
+	-bq load --sync --autodetect --skip_leading_rows 1 --replace ${DATASET}.DOGE-USDT ${LOCAL_DATA_PATH}/raw/DOGE-USDT.csv
+	-bq load --sync --autodetect --skip_leading_rows 1 --replace ${DATASET}.ATOM-USDT ${LOCAL_DATA_PATH}/raw/ATOM-USDT.csv
+	-bq load --sync --autodetect --skip_leading_rows 1 --replace ${DATASET}.ETH-USDT ${LOCAL_DATA_PATH}/raw/ETH-USDT.csv
+	-bq load --sync --autodetect --skip_leading_rows 1 --replace ${DATASET}.BNB-USDT ${LOCAL_DATA_PATH}/raw/BNB-USDT.csv
+	-bq load --sync --autodetect --skip_leading_rows 1 --replace ${DATASET}.ADA-USDT ${LOCAL_DATA_PATH}/raw/ADA-USDT.csv
+	-bq load --sync --autodetect --skip_leading_rows 1 --replace ${DATASET}.LTC-USDT ${LOCAL_DATA_PATH}/raw/LTC-USDT.csv

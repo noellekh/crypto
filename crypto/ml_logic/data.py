@@ -1,9 +1,11 @@
-from crypto.ml_logic.params import  COLUMN_NAMES_RAW,SLICING_TIME,DTYPES_RAW_OPTIMIZED,DTYPES_RAW_OPTIMIZED_HEADLESS,DTYPES_PROCESSED_OPTIMIZED,DTYPES_PROCESSED_OPTIMIZED_HEADLESS,COLUMN_NAMES_PROCESSED
+from crypto.ml_logic.params import  COLUMN_NAMES_RAW,SLICING_TIME,DTYPES_RAW_OPTIMIZED,DTYPES_RAW_OPTIMIZED_HEADLESS,DTYPES_PROCESSED_OPTIMIZED,DTYPES_PROCESSED_OPTIMIZED_HEADLESS,COLUMN_NAMES_PROCESSED,DTYPES_SCALED_OPTIMIZED,COLUMN_NAMES_SCALED,DTYPES_SCALED_OPTIMIZED_HEADLESS
 import os
 import pandas as pd
 
 from crypto.data_sources.local_disk import (get_pandas_chunk, save_local_chunk)
 from crypto.data_sources.big_query import (get_bq_chunk, save_bq_chunk)
+from sklearn.preprocessing import MinMaxScaler
+import numpy as np
 
 
 def clean_data(df: pd.DataFrame) -> pd.DataFrame:
@@ -14,6 +16,19 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
 
     df = df[["open_time","close"]]
     df = df.iloc[::SLICING_TIME,:]
+
+
+    print("\n✅ data cleaned")
+
+    return df
+
+def scaler_custom(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    clean raw data by removing buggy or irrelevant transactions
+    or columns for the training set
+    """
+
+    df.loc[:,"scaled"] = MinMaxScaler().fit_transform(np.array(df.loc[:,"close"]).reshape(-1,1))
 
 
     print("\n✅ data cleaned")
@@ -34,6 +49,9 @@ def get_chunk(source_name: str,
     if "processed" in source_name:
         columns =COLUMN_NAMES_PROCESSED
         dtypes = DTYPES_PROCESSED_OPTIMIZED
+    elif "scaled" in source_name:
+        columns=COLUMN_NAMES_SCALED
+        dtypes=DTYPES_SCALED_OPTIMIZED
     else:
         columns = COLUMN_NAMES_RAW
         if os.environ.get("DATA_SOURCE") == "bigquery":
