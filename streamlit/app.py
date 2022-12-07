@@ -11,6 +11,13 @@ from matplotlib.animation import FuncAnimation
 # import binance
 #from binance import Client
 
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+import string
+import unidecode
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+from tqdm import tqdm
+from nltk.stem.porter import *
 
 
 ####################
@@ -133,20 +140,50 @@ classifier = pipeline('sentiment-analysis')
 st.title('Live Twitter Sentiment Analysis with Tweepy and HuggingFace Transformers')
 st.markdown('This app uses tweepy to get tweets from twitter based on the input name/phrase. It then processes the tweets through HuggingFace transformers pipeline function for sentiment analysis. The resulting sentiments and corresponding tweets are then put in a dataframe for display which is what you see as result.')
 
+def clean (text):
+
+    for punctuation in string.punctuation:
+        text = text.replace(punctuation, ' ') # Remove Punctuation
+
+    lowercased = text.lower() # Lower Case
+
+    unaccented_string = unidecode.unidecode(lowercased) # remove accents
+    words = unaccented_string.split()
+
+    #tokenized = word_tokenize(unaccented_string) # Tokenize
+
+    words_only = [word for word in words if word.isalpha()] # Remove numbers
+
+    stop_words = set(stopwords.words('english')) # Make stopword list
+
+    without_stopwords = [word for word in words_only if not word in stop_words] # Remove Stop Words
+    word = [PorterStemmer().stem(w) for w in without_stopwords]
+    # print(words)
+
+    return " ".join(word)
+
 def run():
     with st.form(key="Enter name"):
         search_words = st.text_input("Enter the name for which you want to know the sentiment")
+        search_users = st.text_input("Enter the user name for which you want to know the sentiment")
         number_of_tweets = st.number_input("Enter the number of latest tweets for which you want to know the sentiment(Maximum 50 tweets)", 0,50,10)
         submit_button = st.form_submit_button(label="Submit")
         if submit_button:
 
             tweets =tw.Cursor(api.search_tweets,q=search_words,lang="en").items(number_of_tweets)
-
-            tweet_list = [i.text for i in tweets]
+            tweets_user = tw.Cursor(api.user_timeline, screen_name=search_users,
+                              count=200, tweet_mode="extended").items((number_of_tweets))
+            tweet_list = [clean(i.text) for i in tweets]
+            user_list = [user.full_text for user in tweets_user]
             p = [i for i in classifier(tweet_list)]
+            u = [j for j in classifier(user_list)]
             q=[p[i]["label"] for i in range(len(p))]
+            v=[u[i]["label"] for i in range(len(u))]
             df = pd.DataFrame(list(zip(tweet_list, q)),columns =["Latest "+str(number_of_tweets)+" Tweets"+" on "+search_words, "sentiment"])
+            df2 = pd.DataFrame(list(zip(user_list, v)),columns =["Latest "+str(number_of_tweets)+" Tweets"+" on "+search_users, "sentiment"])
+
         st.write(df)
+        st.write(df2)
 
 
 if __name__=="__main__":
