@@ -147,7 +147,7 @@ def train(pair:str="BTC-USDT",freq:str="1d"):
 
     # Model params
     learning_rate = 0.01
-    batch_size = 64
+    batch_size = 32
     patience = 3
 
     # Iterate on the full dataset per chunks
@@ -193,7 +193,7 @@ def train(pair:str="BTC-USDT",freq:str="1d"):
             batch_size=batch_size,
             patience=patience,
             # validation_data=(X_val_processed, y_val)
-            validation_split=0.1,
+            validation_split=0.2,
         )
 
         metrics_val_chunk = np.min(history.history['val_mae'])
@@ -300,7 +300,6 @@ def pred(pair:str="BTC-USDT",freq:str="1d") -> np.ndarray:
     metrics_val_list = []
 
 
-
     print(Fore.BLUE + f"\nLoading and training on preprocessed chunk n°{chunk_id}..." + Style.RESET_ALL)
 
     data_processed_chunk = get_chunk(
@@ -335,20 +334,13 @@ def pred(pair:str="BTC-USDT",freq:str="1d") -> np.ndarray:
 
 
 if __name__ == '__main__':
-    # files = [f for f in listdir(LOCAL_DATA_PATH+"/raw") if ".csv" in f]
-    # files = [f for f in files if "USDT" in f]
-
     pairs = ["BTC-USDT","MATIC-USDT","DOGE-USDT",
              "ATOM-USDT","ETH-USDT","BNB-USDT","ADA-USDT","LTC-USDT","UNI-USDT"]
-    frequences = ["1d","12h","6h"]
-    for pair in pairs[:1]:
-        for freq in frequences:
+    frequences = ["6h","12h","1d"]
+
+    for freq in frequences:
+        for pair in pairs:
             # preprocess(pair)
             scaling(pair=pair,freq=freq)
             train(pair=pair,freq=freq)
             pred(pair=pair,freq=freq)
-        break
-
-    # train()
-    # pred()
-    # evaluate()
